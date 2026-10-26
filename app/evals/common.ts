@@ -444,81 +444,80 @@ export function csvCell(v: string | number): string {
 export const csvLine = (cells: (string | number)[]) => cells.map(csvCell).join(',');
 
 // ---------------------------------------------------------------------------
-// Intraday layout
+// Intraday placement
 // ---------------------------------------------------------------------------
-
-export interface LayoutItem {
-  /** minutes between first entry fill and last exit fill */
-  hold: number;
-  loss: boolean;
-  /** exact gap (min) after the previous trade's exit; overrides the loss/win minimum */
-  pinGap?: number;
-  /** first-half-hour trade: placed before every non-opening trade */
-  opening?: boolean;
-}
-
-export interface LayoutOpts {
-  from?: number; // 09:15
-  to?: number; // latest allowed exit
-  winGap?: number;
-  lossGap?: number;
-  /** first minute a non-opening trade may start */
-  openingEnd?: number;
-}
 
 export const MIN_0915 = 9 * 60 + 15;
 export const MIN_0945 = 9 * 60 + 45;
 export const MIN_1525 = 15 * 60 + 25;
 
+export interface PlaceItem {
+  /** underlying: trades in the same underlying never overlap and keep a gap */
+  key: string;
+  /** minutes between first entry fill and last exit fill */
+  hold: number;
+  loss: boolean;
+  /** pinned entry minute */
+  entry?: number;
+  /** bounds on the entry minute for unpinned items */
+  min?: number;
+  max?: number;
+}
+
+export interface PlaceOpts {
+  from?: number;
+  to?: number; // latest allowed exit
+  winGap?: number; // gap after a winner in the same underlying
+  lossGap?: number; // gap after a loser in the same underlying (more than 25 so nothing looks like a quick re-entry)
+}
+
 /**
- * Places a day's trades one after another (never overlapping). Returns the
- * entry minute of each item, or null when they cannot fit. Spare time is
- * spread randomly, so entries land across the whole session.
+ * Picks an entry minute for each item. Trades in different underlyings may
+ * overlap (you can sit in a loser while taking another trade); within one
+ * underlying they are sequential with a gap after every trade. Returns null when
+ * the items cannot be placed.
  */
-export function layoutDay(items: LayoutItem[], rng: Rng, opts: LayoutOpts = {}): number[] | null {
+export function placeItems(items: PlaceItem[], rng: Rng, opts: PlaceOpts = {}): number[] | null {
   const from = opts.from ?? MIN_0915;
   const to = opts.to ?? MIN_1525;
-  const winGap = opts.winGap ?? 4;
+  const winGap = opts.winGap ?? 16;
   const lossGap = opts.lossGap ?? 26;
-  const openingEnd = opts.openingEnd ?? MIN_0945 + 1;
-  const n = items.length;
-  if (n === 0) return [];
-  const gap = (i: number) => (i === 0 ? 0 : items[i].pinGap ?? (items[i - 1].loss ? lossGap : winGap));
-  const firstFree = items.findIndex((x) => !x.opening);
-  const extra = new Array<number>(n + 1).fill(0); // extra[i] = slack added before item i; extra[n] = after the last
-  extra[0] = rng.int(0, 4);
-  const entries: number[] = [];
-  const recompute = () => {
-    let t = from;
-    for (let i = 0; i < n; i++) {
-      t += gap(i) + extra[i];
-      entries[i] = t;
-      t += items[i].hold;
+  const entries = new Array<number>(items.length).fill(-1);
+  const placed: number[] = [];
+  const ok = (i: number, e: number): boolean => {
+    for (const j of placed) {
+      if (items[j].key !== items[i].key) continue;
+      const ej = entries[j];
+      if (e >= ej + items[j].hold) {
+        if (e - (ej + items[j].hold) < (items[j].loss ? lossGap : winGap)) return false;
+      } else if (ej >= e + items[i].hold) {
+        if (ej - (e + items[i].hold) < (items[i].loss ? lossGap : winGap)) return false;
+      } else return false;
     }
-    return t;
+    return true;
   };
-  let end = recompute();
-  if (firstFree >= 0 && entries[firstFree] < openingEnd) {
-    extra[firstFree] += openingEnd - entries[firstFree];
-    end = recompute();
-  }
-  const slack = to - end;
-  if (slack < 0) return null;
-  const freeIdx: number[] = [];
-  for (let i = Math.max(firstFree, 0); i <= n; i++) {
-    if (i < n && items[i].pinGap !== undefined) continue;
-    freeIdx.push(i);
-  }
-  if (firstFree < 0) freeIdx.push(n);
-  const w = freeIdx.map(() => -Math.log(Math.max(rng.next(), 1e-9)));
-  const total = w.reduce((a, b) => a + b, 0);
-  let left = slack;
-  freeIdx.forEach((i, k) => {
-    const add = Math.floor((slack * w[k]) / total);
-    extra[i] += add;
-    left -= add;
+  items.forEach((it, i) => {
+    if (it.entry === undefined) return;
+    if (!ok(i, it.entry)) return;
+    entries[i] = it.entry;
+    placed.push(i);
   });
-  extra[freeIdx[rng.int(0, freeIdx.length - 1)]] += left;
-  recompute();
+  if (items.some((it, i) => it.entry !== undefined && entries[i] < 0)) return null;
+  const free = items.map((_, i) => i).filter((i) => items[i].entry === undefined).sort((a, b) => items[b].hold - items[a].hold);
+  for (const i of free) {
+    const lo = Math.max(from, items[i].min ?? from);
+    const hi = Math.min(to - items[i].hold, items[i].max ?? Infinity);
+    if (hi < lo) return null;
+    let done = false;
+    for (let tries = 0; tries < 250 && !done; tries++) {
+      const e = rng.int(lo, hi);
+      if (ok(i, e)) {
+        entries[i] = e;
+        placed.push(i);
+        done = true;
+      }
+    }
+    if (!done) return null;
+  }
   return entries;
 }
