@@ -32,11 +32,11 @@ holding-losers set is the long-held ordinary losers (including the loser that ea
    option that expires that same day (25 trades). One in five wins.
 2. **Quick re-entry after a loss** (-Rs 14,010 gross). On 12 non-Tuesdays, a loss is followed 2-10
    minutes later by a fresh trade in the same instrument at the same size. About a quarter of those win.
-3. **Holding losers** (about Rs 9,100 of extra loss compared with the quicker losses, 37 trades). Ordinary winners are
+3. **Holding losers** (about Rs 11,900 of extra loss compared with the quicker losses, 37 trades). Ordinary winners are
    held 6-20 minutes; ordinary losers 45-105 minutes, and about 2.5x the size of the few quick ordinary losers.
 
 Everything else is ordinary trading that makes about +Rs 22,100 gross, so the headline of
-the review is: these habits turned a profitable month into a loss (-Rs 19,910 gross, -Rs 40,248 after estimated charges).
+the review is: these habits turned a profitable month into a loss (-Rs 19,921 gross, -Rs 40,260 after estimated charges).
 
 ## The decoys (a good review must NOT flag these)
 

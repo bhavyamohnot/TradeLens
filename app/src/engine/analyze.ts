@@ -8,7 +8,7 @@ const MAX_HABITS = 3;
 const MIN_TRADES = 3;
 const MATERIALITY = 0.05; // a habit must explain >= 5% of the month's total losses
 const T_SINGLE = -2;
-const T_MULTI = -2.5;
+const T_MULTI = -3;
 const MAX_SHARE = 0.8; // a "habit" covering >80% of trades is just the whole month
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -96,8 +96,9 @@ function score(c: Candidate, ctx: Ctx): Scored {
 }
 
 const marginal = (c: Candidate, taken: Set<string>) => {
-  const ids = c.tradeIds.filter((id) => !taken.has(id));
-  return { ids, cost: sum(ids.map((id) => c.deltas[id] ?? 0)) };
+  const base = c.refine ? c.refine(taken) : c;
+  const ids = base.tradeIds.filter((id) => !taken.has(id));
+  return { ids, cost: sum(ids.map((id) => base.deltas[id] ?? 0)), deltas: base.deltas };
 };
 
 function confidenceOf(s: Scored, n: number): Confidence {
@@ -129,24 +130,54 @@ export function analyze(parsed: ParseResult): Review {
   }
 
   // Greedy selection by marginal cost: the biggest habit claims its trades,
-  // the next one only gets credit for trades not already explained.
+  // the next one only gets credit for trades not already explained. A
+  // trade-set habit must still stand out on the trades it has left.
   const pool = ran.flatMap((r) => r.scored).filter((s) => s.significant && s.standalone > 0);
   const taken = new Set<string>();
-  const chosen: { s: Scored; cost: number; ids: string[] }[] = [];
+  const chosen: { s: Scored; cost: number; ids: string[]; deltas: Record<string, number>; before: Set<string> }[] = [];
+  const stillSignificant = (s: Scored, ids: string[]) => {
+    if (s.c.type === 'excess') return true;
+    const inSet = new Set(ids);
+    const t = welchT(
+      ids.map((id) => ctx.byId.get(id)!.netPnl),
+      trades.filter((x) => !inSet.has(x.id)).map((x) => x.netPnl),
+    );
+    return t !== null && t <= (s.c.multi ? T_MULTI : T_SINGLE);
+  };
   while (chosen.length < MAX_HABITS) {
-    let best: { s: Scored; cost: number; ids: string[] } | null = null;
-    for (const s of pool) {
-      if (chosen.some((x) => x.s === s)) continue;
-      const m = marginal(s.c, taken);
-      if (m.ids.length >= MIN_TRADES && m.cost >= threshold && (!best || m.cost > best.cost)) best = { s, ...m };
-    }
-    if (!best) break;
-    chosen.push(best);
+    const options = pool
+      .filter((s) => !chosen.some((x) => x.s === s))
+      .map((s) => ({ s, ...marginal(s.c, taken) }))
+      .filter((o) => o.ids.length >= MIN_TRADES && o.cost >= threshold && stillSignificant(o.s, o.ids));
+    if (!options.length) break;
+    let best = options.reduce((a, b) => (b.cost > a.cost ? b : a));
+    // Prefer a narrower habit nested inside the winner when it explains most of
+    // its cost: "options on expiry day" is more fixable than "NIFTY loses".
+    const inBest = new Set(best.ids);
+    const narrower = options
+      .filter((o) => o !== best && o.ids.length < best.ids.length)
+      .filter((o) => o.ids.filter((id) => inBest.has(id)).length >= 0.9 * o.ids.length && o.cost >= 0.6 * best.cost)
+      .sort((a, b) => b.cost - a.cost)[0];
+    if (narrower) best = narrower;
+    chosen.push({ ...best, before: new Set(taken) });
     best.ids.forEach((id) => taken.add(id));
   }
+  // A re-measured habit can end up costing more than one picked before it.
+  // Re-rank by cost and re-measure in that order until the order is stable.
+  for (let pass = 0; pass < 3; pass++) {
+    if (chosen.every((x, i) => i === 0 || chosen[i - 1].cost >= x.cost)) break;
+    chosen.sort((a, b) => b.cost - a.cost);
+    const claimed = new Set<string>();
+    for (const x of chosen) {
+      const m = marginal(x.s.c, claimed);
+      Object.assign(x, m, { before: new Set(claimed) });
+      m.ids.forEach((id) => claimed.add(id));
+    }
+  }
 
-  const habits: Habit[] = chosen.map(({ s, cost, ids }, i) => {
+  const habits: Habit[] = chosen.map(({ s, cost, ids, deltas, before }, i) => {
     const habitTrades = ids.map((id) => ctx.byId.get(id)!);
+    s.c.refine?.(before); // evidence text describes the trades as measured at selection
     const text = s.c.text({ cost, trades: habitTrades, ctx });
     const title = text.title.length > 60 ? `${text.title.slice(0, 57)}…` : text.title;
     return {
@@ -162,7 +193,7 @@ export function analyze(parsed: ParseResult): Review {
       rule: text.rule,
       confidence: confidenceOf(s, ids.length),
       overlapsWith: [],
-      adjustments: Object.fromEntries(ids.map((id) => [id, round2(s.c.deltas[id] ?? 0)])),
+      adjustments: Object.fromEntries(ids.map((id) => [id, round2(deltas[id] ?? 0)])),
     };
   });
 
@@ -238,7 +269,7 @@ export function analyze(parsed: ParseResult): Review {
         key: worst.s.c.key,
         id: detector.id,
         title: detector.name,
-        detail: `${worst.s.c.label.charAt(0).toUpperCase() + worst.s.c.label.slice(1)} lost ${formatInr(lost)}, under 5% of the month's losses — too small to prioritise.`,
+        detail: `${worst.s.c.label.charAt(0).toUpperCase() + worst.s.c.label.slice(1)} cost ${formatInr(lost)}, under 5% of the month's losses — too small to prioritise.`,
         reason: 'too-small',
       });
     }

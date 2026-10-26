@@ -96,11 +96,8 @@ export default function ReviewPage({ fileName, review, parsed, onCheckColumns, o
   const print = () => window.print();
 
   const notes = [...review.notes];
+  // Skipped rows and open positions are already explained in review.notes by the engine.
   const extra: string[] = [];
-  if (parsed?.rejected.length) extra.push(`${plural(parsed.rejected.length, 'row')} could not be read and ${parsed.rejected.length === 1 ? 'was' : 'were'} left out.`);
-  if (parsed?.openPositions.length) {
-    extra.push(`${plural(parsed.openPositions.length, 'position')} still open at the end of the file ${parsed.openPositions.length === 1 ? 'was' : 'were'} left out: ${parsed.openPositions.map((p) => p.symbol).join(', ')}.`);
-  }
   const feesEstimated = parsed && (parsed.coverage.fees === 'estimated' || parsed.coverage.fees === 'mixed');
   const hasFeeNote = notes.some((n) => /charge|fee/i.test(n.text));
   if (feesEstimated && !hasFeeNote) extra.push('Charges were estimated because the file did not report them. Net P&L may be off by a small amount.');

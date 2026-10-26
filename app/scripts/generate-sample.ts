@@ -208,7 +208,7 @@ const ONE_OFF_LOSS = -6_000;
 // Base sizes (before calibration)
 const LONG_LOSS_MEAN: Record<string, number> = { RELIANCE: 2_200, NIFTY: 1_580, BANKNIFTY: 1_580, HDFCBANK: 1_440, INFY: 1_490 };
 const WIN_MEAN: Record<string, number> = { RELIANCE: 3_150, NIFTY: 900, BANKNIFTY: 950, HDFCBANK: 860, INFY: 1_300 };
-const QUICK_LOSS_RATIO = 0.4;
+const QUICK_LOSS_RATIO = 0.8;
 const OPENING_WIN_RATIO = 0.6; // many small, reliable opening-range winners
 // floor on |gross| per underlying so estimated charges never flip a trade's sign or look like fee churn
 const MIN_GROSS: Record<string, number> = { RELIANCE: 1_700, NIFTY: 450, BANKNIFTY: 450, HDFCBANK: 700, INFY: 700 };
@@ -419,10 +419,6 @@ function buildOnce(attempt: number): Built {
     const lastExit = d === days[days.length - 1] ? 15 * 60 + 10 : MIN_1525;
     let placed: Placed[] | null = null;
     for (let tries = 0; tries < 300 && !placed; tries++) placed = placeDay(rng, opening, free, dayPair.get(d), lastExit);
-    if (!placed && process.env.DEBUG_SAMPLE) {
-      const all = [...opening, ...free, ...(dayPair.get(d) ? [dayPair.get(d)!.trigger, dayPair.get(d)!.reentry] : [])];
-      console.error('FAIL', d, all.map((x) => `${x.role}/${x.inst.underlying}/w${x.window ?? '-'}/h${x.hold}`).join(' '));
-    }
     check(placed !== null, `could not place ${d}`);
     for (const p of placed!) scheduled.push({ slot: p.slot, date: d, entryMin: p.entry });
   }
@@ -751,11 +747,12 @@ function validate(b: Built): Stats {
   const medL = median(losers.map(hold));
   const limit = 2 * medW;
   const longL = losers.filter((t) => hold(t) > limit);
-  const quickL = losers.filter((t) => hold(t) <= limit);
-  const baseline = sum(quickL.map(net)) / quickL.length;
-  const holdingExcess = round2(sum(longL.map((t) => Math.max(0, baseline - net(t)))));
+  // same definition as the engine: median quick loss, leaving out quick losses that
+  // belong to the other planted habits; excess not clipped at zero
+  const quickL = losers.filter((t) => hold(t) <= limit && !planted.has(t));
+  const baseline = median(quickL.map(net));
+  const holdingExcess = round2(sum(longL.map((t) => baseline - net(t))));
   check(medL / medW >= 2.2, `median loser hold ${medL} vs winner ${medW}`);
-  if (process.env.DEBUG_SAMPLE) console.error('HL excess', holdingExcess, 'baseline', Math.round(baseline), 'quick', quickL.length, 'long', longL.length, 'medW', medW);
   check(holdingExcess >= 8_000 && holdingExcess <= 12_500, `holding-losers excess ${holdingExcess}`);
   plantedGross['holding-losers'] = g(longL);
 
@@ -782,11 +779,6 @@ function validate(b: Built): Stats {
       return m >= a && m < z;
     };
     windowT[name] = round2(welch(trades.filter(inside).map(net), trades.filter((t) => !inside(t)).map(net)));
-    if (process.env.DEBUG_SAMPLE) {
-      const roles: Record<string, number> = {};
-      for (const t of trades.filter(inside)) roles[t.role] = (roles[t.role] ?? 0) + 1;
-      console.error('WIN', name, windowT[name], JSON.stringify(roles), Math.round(sum(trades.filter(inside).map(net))));
-    }
     if (name !== 'opening') check(windowT[name] > -2.0, `window ${name} looks bad by chance (t=${windowT[name]})`);
     if (name !== 'opening') check(windowCount[name] >= (name === 'closing' ? 12 : 22) && windowCount[name] <= 50, `window ${name} has ${windowCount[name]} trades`);
   }

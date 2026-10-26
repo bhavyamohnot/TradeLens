@@ -3,7 +3,7 @@
   "totals": {
     "roundTrips": 158,
     "fills": 388,
-    "grossPnl": -19909.75
+    "grossPnl": -19921.5
   },
   "openPosition": {
     "symbol": "HDFCBANK",
@@ -329,7 +329,7 @@
         }
       ],
       "grossPnl": -61522,
-      "excessLossEstimate": 9104.78
+      "excessLossEstimate": 11915.54
     }
   ],
   "decoys": [

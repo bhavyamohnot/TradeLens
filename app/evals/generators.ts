@@ -533,9 +533,14 @@ export function plantFeeChurn(fx: Fixture, o: { strength?: number } = {}): strin
   const want = Math.max(1, Math.round(30 * s));
   const ids: string[] = [];
   const cands = fx.rng.shuffle(fx.trades.filter((t) => ['NIFTY', 'BANKNIFTY'].includes(t.inst.underlying)));
+  // Default strength = charges worth ~10% of the trader's own gross losses, so the
+  // planted habit sits clearly above the engine's 5% materiality bar whatever the
+  // baseline's scale (a fixed ~₹2,000 landed right on the bar for some seeds).
+  const grossLosses = fx.trades.reduce((acc, t) => acc + Math.max(0, -t.pnl), 0);
+  const perTrade = (0.1 * grossLosses) / want;
   for (const t of cands.slice(0, want)) {
     t.pnl = Math.round(fx.rng.normal(4, 40) * 100) / 100;
-    t.fees = Math.round(fx.rng.float(58, 78) * 100) / 100;
+    t.fees = Math.round(fx.rng.float(0.85, 1.15) * perTrade * 100) / 100;
     t.tags.push('scalp');
     ids.push(t.id);
   }

@@ -32,6 +32,8 @@ export interface Candidate {
   multi: boolean; // one of several variants tested (stricter significance bar)
   tradeIds: string[];
   deltas: Record<string, number>;
+  /** Re-measure once higher-ranked habits have claimed trades (excess-type checks whose baseline depends on them). */
+  refine?: (taken: Set<string>) => { tradeIds: string[]; deltas: Record<string, number> };
   eligible: boolean; // detector-specific preconditions met (excess-type only)
   strength: 'strong' | 'moderate' | 'weak';
   text(args: { cost: number; trades: Trade[]; ctx: Ctx }): HabitText;
@@ -358,11 +360,19 @@ const holdingLosers: Detector = {
     const medW = Math.max(median(winners.map((t) => t.holdMinutes!)), 1);
     const medL = median(losers.map((t) => t.holdMinutes!));
     const limit = 2 * medW;
-    const long = losers.filter((t) => t.holdMinutes! > limit);
-    const quick = losers.filter((t) => t.holdMinutes! <= limit);
-    if (!long.length) return [];
-    const baseline = quick.length >= 3 ? mean(quick.map((t) => t.netPnl)) : 0.5 * mean(long.map((t) => t.netPnl));
-    const deltas = Object.fromEntries(long.map((t) => [t.id, Math.max(0, baseline - t.netPnl)]));
+    // Excess loss = how much worse each long-held loser did than a typical quick
+    // loss (median, not clipped, so the total matches the averages shown). Quick
+    // losses already explained by a higher-ranked habit are left out of the
+    // baseline: they are usually big and fast, and would hide this habit.
+    const measure = (taken: Set<string>) => {
+      const long = losers.filter((t) => t.holdMinutes! > limit && !taken.has(t.id));
+      const quick = losers.filter((t) => t.holdMinutes! <= limit && !taken.has(t.id));
+      const baseline = quick.length >= 3 ? median(quick.map((t) => t.netPnl)) : 0.5 * mean(long.map((t) => t.netPnl));
+      return { long, quick, baseline, deltas: Object.fromEntries(long.map((t) => [t.id, baseline - t.netPnl])) };
+    };
+    const all = measure(new Set());
+    if (!all.long.length) return [];
+    let last = all;
     const ratio = medL / medW;
     return [
       {
@@ -371,18 +381,22 @@ const holdingLosers: Detector = {
         label: 'losing trades held too long',
         type: 'excess',
         multi: false,
-        tradeIds: long.map((t) => t.id),
-        deltas,
-        eligible: ratio >= 2 && long.length >= 3,
-        strength: long.length >= 10 && ratio >= 3 ? 'strong' : long.length >= 5 ? 'moderate' : 'weak',
+        tradeIds: all.long.map((t) => t.id),
+        deltas: all.deltas,
+        refine: (taken) => {
+          last = measure(taken);
+          return { tradeIds: last.long.map((t) => t.id), deltas: last.deltas };
+        },
+        eligible: ratio >= 2 && all.long.length >= 3,
+        strength: all.long.length >= 10 && ratio >= 3 ? 'strong' : all.long.length >= 5 ? 'moderate' : 'weak',
         text: ({ cost, trades }) => ({
           title: 'Holding losing trades much longer than winners',
           summary: `Losing trades you held past ${Math.round(limit)} minutes lost ${formatInr(cost)} more than your quicker losses would have.`,
           evidence: [
             `You held winners for ${Math.round(medW)} min and losers for ${Math.round(medL)} min (typical)`,
             `${plural(trades.length, 'losing trade')} held over ${Math.round(limit)} min averaged ${formatInr(mean(trades.map((t) => t.netPnl)))}`,
-            quick.length
-              ? `Losers you cut sooner averaged ${formatInr(mean(quick.map((t) => t.netPnl)))}`
+            last.quick.length >= 3
+              ? `A typical loser you cut sooner: ${formatInr(last.baseline)}`
               : 'You rarely cut a losing trade quickly',
           ],
           rule: `Use a time stop: if a trade isn't working after ${Math.round(limit)} minutes, exit.`,
