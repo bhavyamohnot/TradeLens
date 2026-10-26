@@ -30,64 +30,8 @@
   .linkbox a { color: var(--accent); text-decoration: none; }
 </style>
 
-<!-- ============ 02 PROMPTS (1/2) ============ -->
-<div class="page">
-  <div class="band">
-    <div class="eyebrow">Artifact 02 · Prompts</div>
-    <h1>How TradeLens was prompted into existence</h1>
-    <p>Two rounds. A first version was built quickly with ChatGPT (Codex); it worked, but answered the wrong question. It was then audited against the brief and rebuilt and refined with Claude (Claude Code).</p>
-  </div>
-  <main>
-    <h2>Round 1 · ChatGPT (Codex): the prompts as sent, and why they didn't work</h2>
-    <div class="prompt"><div class="q">which of these can we make immediately</div>
-      <div class="a">Codex compared all four problems and recommended <b>#03 Post-trade review</b>: clearest problem, fewest dependencies, testable. <span class="tag ok">kept</span></div></div>
-    <div class="prompt"><div class="q">lets quickly build an agentic ai workflow with a web app where chatbot type interface, chat history and so on is there where the traders can upload their trade book and the agentic workflow will analyse it for them , behavioural patterns, wins losses and so on so forth</div>
-      <div class="a">A chat-style app with CSV upload, saved history, win/loss/fee/drawdown metrics and "behavioural observations". The free-form AI was never connected; the "chat" was keyword routing. <span class="tag fail">wrong shape</span></div></div>
-    <div class="prompt"><div class="q">deploy on vercel real quick and no login required. and lets test it out real quick</div>
-      <div class="a">Deployed publicly. Codex built locally and uploaded only the compiled output, so the source was never kept. <span class="tag fail">no source</span></div></div>
-    <div class="prompt"><div class="q">make it more open ,, the excel upload</div>
-      <div class="a">Added Excel import with a column-matching step.</div></div>
-    <div class="prompt"><div class="q">even more, i meant the pnl and other columns requirement sounds big, or have an example created for me real quick so i can test</div>
-      <div class="a">Generated <b>TradeLens-example.xlsx</b>: 60 synthetic closed trades with three planted patterns. <span class="tag ok">kept as a test file</span></div></div>
-
-    <h2>What the audit of the Round 1 app found</h2>
-    <ul>
-      <li><strong>Wrong #1 habit.</strong> Findings appeared in a fixed order, not by ₹. Its single "next step" pointed at fees (₹2,100) while BANKNIFTY had cost ₹9,100.</li>
-      <li><strong>Flagged a habit that made money.</strong> It called re-entries after a loss a problem, but those trades made +₹650.</li>
-      <li><strong>Wrong answers in chat.</strong> "What time of day am I worst?" returned the <em>strongest</em> hour, which was itself −₹1,390.</li>
-      <li><strong>Couldn't read order history.</strong> It needed closed trades with P&amp;L already worked out; the brief starts from order history.</li>
-      <li><strong>A dashboard, not a review.</strong> Metrics first, chat second, and no single "fix this one thing" outcome.</li>
-    </ul>
-    <div class="callout"><strong>Lesson carried into Round 2:</strong> "build an agentic chatbot" described a technology, not the user's job. The rebuild started from the outcome instead: the 2–3 habits that cost the most rupees, each proven with trades and turned into one rule.</div>
-
-    <h2>Round 2 · Claude (Claude Code): audit, then rebuild</h2>
-    <p>Round 2 opened by pointing Claude at the brief, the JD, the example file and the live Round 1 app, and asking for an audit. The findings above became the spec. The rebuild was then driven step by step; the next page distils those steps into a prompt sequence that recreates TradeLens from scratch.</p>
-  </main>
-  <footer><span>TradeLens · Bhavya Mohnot</span><span>02 · Prompts (1/2)</span></footer>
-</div>
-
-<!-- ============ 02 PROMPTS (2/2) ============ -->
-<div class="page">
-  <div class="band">
-    <div class="eyebrow">Artifact 02 · Prompts</div>
-    <h1>Prompts to recreate TradeLens, step by step</h1>
-    <p>The Round 2 build distilled into a sequence you can run in order with a coding agent. Each step names an outcome and a way to check it.</p>
-  </div>
-  <main>
-    <div class="step"><div class="n">1</div><div><div class="t">Audit before building</div><div class="q">Here is the assignment PDF, the JD, an example trades file and a first prototype. Check the prototype against every requirement and against the example data: what should the top habit be, and what does the app actually say? List what it meets and misses. No code yet.</div></div></div>
-    <div class="step"><div class="n">2</div><div><div class="t">Frame the product</div><div class="q">Problem 03: turn a month of order history into the 2–3 habits costing a trader money. Define a "habit" in measurable terms, what the output looks like (at most 3, ranked by ₹, each with the trades that prove it and one rule to try), and what's out of scope. Plain words, no motive-guessing.</div></div></div>
-    <div class="step"><div class="n">3</div><div><div class="t">Read real broker files</div><div class="q">In TypeScript, read CSV/XLSX, find the header row even under title rows, and auto-map columns. Accept a broker tradebook (one row per buy/sell, Zerodha Console style) or a closed-trade sheet. Rebuild round trips per symbol: scale-ins, partial exits, shorts, flips through zero. Leave open positions out and say so. If there's no charges column, estimate NSE charges and label them as estimates.</div></div></div>
-    <div class="step"><div class="n">4</div><div><div class="t">Write the habit checks</div><div class="q">Write pure-function detectors that return the trades involved and the ₹ fixing each would have saved: an instrument that keeps losing, trading on after 3 straight losses, re-entering ≤15 min after a loss, trades past your usual daily count, a losing time of day, options opened on expiry day, losers held ≥2× longer than winners, sizing up after a loss, charges ≥30% of the move.</div></div></div>
-    <div class="step"><div class="n">5</div><div><div class="t">Rank by rupees, and don't invent problems</div><div class="q">Rank by marginal ₹: each habit only gets credit for trades a higher-ranked habit hasn't claimed. Show a habit only if it covers ≥3 trades, ≥5% of the month's losses, and is statistically worse than the trader's other trades. For everything checked and not shown, say why in one line: made money, too small, not significant, or overlapping.</div></div></div>
-    <div class="step"><div class="n">6</div><div><div class="t">Design a review, not a dashboard</div><div class="q">Build a React page: upload and samples; a column check only when detection is unsure; then a verdict sentence, three habit cards (₹ cost, evidence, rule, trade list), one chart of the month with and without the habits, the "checked" list, and small stats last. Mobile first, INR formatting, everything in the browser.</div></div></div>
-    <div class="step"><div class="n">7</div><div><div class="t">Close the loop</div><div class="q">Let the trader commit to one rule. Next month, compare that habit's ₹ cost with the month they committed.</div></div></div>
-    <div class="step"><div class="n">8</div><div><div class="t">Make a realistic month of data</div><div class="q">Generate a deterministic September 2026 Zerodha-style tradebook: NIFTY weeklies with Tuesday expiries, BANKNIFTY monthlies, RELIANCE futures, equity intraday. Plant 3 habits of known cost plus decoys that must not be flagged, and write an answer key computed from the fills, not from the app.</div></div></div>
-    <div class="step"><div class="n">9</div><div><div class="t">Write the evals and a ship bar</div><div class="q">Fixed cases (the brief's example, the sample, one per habit, a clean trader, a symbol-vs-time confound, messy formats), seeded sweeps (20 traders per habit, 30 clean traders), and copy checks on every review. Fail the run if the ship bar isn't met.</div></div></div>
-    <div class="step"><div class="n">10</div><div><div class="t">Fix honestly, then check on unseen data</div><div class="q">Run the evals. For each failure, decide whether the engine or the test is wrong before changing anything, and never loosen a threshold just to pass. Then rerun on a held-out seed set you didn't tune on.</div></div></div>
-    <div class="step"><div class="n">11</div><div><div class="t">Ship</div><div class="q">Make it a static Vite app on Vercel with no backend and no environment variables. Test both samples on the live URL at desktop and phone width.</div></div></div>
-  </main>
-  <footer><span>TradeLens · Bhavya Mohnot</span><span>02 · Prompts (2/2)</span></footer>
-</div>
+<!-- prompt pages live in prompts-trail.html; build.py splices them in here -->
+<!--PROMPTS-->
 
 <!-- ============ 03 EVALS ============ -->
 <div class="page">

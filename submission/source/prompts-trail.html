@@ -1,0 +1,88 @@
+<!-- ============ 02 PROMPTS (1/2) ============ -->
+<style>
+  .trail { position: relative; margin: 0 0 1mm; }
+  .trail::before { content: ""; position: absolute; left: 2.6mm; top: 2mm; bottom: 2mm; width: 1pt; background: var(--line); }
+  .ev { position: relative; display: grid; grid-template-columns: 5.2mm 1fr; gap: 0 2.6mm; margin: 0 0 2.1mm; break-inside: avoid; }
+  .dot { width: 5.2mm; height: 5.2mm; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7pt; font-weight: 700; color: #fff; margin-top: .6mm; position: relative; z-index: 1; }
+  .dot.f { background: var(--loss); } .dot.w { background: var(--gain); } .dot.x { background: #D97706; } .dot.i { background: var(--accent); }
+  .ev .who { font-size: 6.6pt; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0 0 .6mm; }
+  .ev .q { background: #F5F7FB; padding: 1.4mm 2.6mm; font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 7.1pt; color: var(--ink); white-space: pre-wrap; line-height: 1.42; border-radius: 1.5mm; border: 1px solid var(--line); }
+  .ev .r { font-size: 7.75pt; color: var(--ink2); margin: 1mm 0 0; line-height: 1.4; }
+  .ev .r b { color: var(--ink); }
+  .ev .fix { font-size: 7.6pt; margin: .9mm 0 0; padding: 1.2mm 2.4mm; background: #FFF7E6; border-radius: 1.5mm; color: var(--ink); }
+  .tag.fixd { background: #FFF1D6; color: #B45309; }
+  .phase { font-size: 9.6pt; color: var(--ink); margin: 2.8mm 0 1.6mm; font-weight: 700; display: flex; align-items: center; gap: 2mm; }
+  .phase::before { content: ""; width: 3mm; height: 1.2pt; background: var(--accent); display: inline-block; }
+  .legend { font-size: 7pt; color: var(--muted); display: flex; gap: 4mm; margin: -0.5mm 0 2mm; }
+  .legend span { display: inline-flex; align-items: center; gap: 1.2mm; }
+  .legend i { width: 2.4mm; height: 2.4mm; border-radius: 50%; display: inline-block; }
+</style>
+<div class="page">
+  <div class="band">
+    <div class="eyebrow">Artifact 02 · Prompts</div>
+    <h1>The prompt trail, from first try to shipped app</h1>
+    <p>Round 1 was built quickly with ChatGPT (Codex). Round 2 audited it against the brief and rebuilt it with Claude (Claude Code). The prompts are quoted as sent, typos included, each with what came back.</p>
+  </div>
+  <main>
+    <div class="legend"><span><i style="background:var(--loss)"></i>didn't work</span><span><i style="background:#D97706"></i>failed, then fixed</span><span><i style="background:var(--gain)"></i>worked</span></div>
+
+    <div class="phase">Round 1 · ChatGPT (Codex)</div>
+    <div class="trail">
+      <div class="ev"><div class="dot w">✓</div><div><div class="who">Prompt 1</div><div class="q">which of these can we make immediately</div>
+        <div class="r">Compared the four problems and recommended <b>#03 Post-trade review</b>: clearest problem, fewest dependencies, testable.</div></div></div>
+      <div class="ev"><div class="dot f">✕</div><div><div class="who">Prompt 2</div><div class="q">lets quickly build an agentic ai workflow with a web app where chatbot type interface, chat history and so on is there where the traders can upload their trade book and the agentic workflow will analyse it for them , behavioural patterns, wins losses and so on so forth</div>
+        <div class="r">A chat-style dashboard: upload, saved history, win/loss/fee metrics. The AI was never connected; the "chat" matched keywords. <b>It described a technology, not the trader's job.</b></div></div></div>
+      <div class="ev"><div class="dot f">✕</div><div><div class="who">Prompt 3</div><div class="q">deploy on vercel real quick and no login required. and lets test it out real quick</div>
+        <div class="r">Deployed, but only the compiled output was uploaded. <b>The source code was never kept</b>, which mattered later.</div></div></div>
+      <div class="ev"><div class="dot w">✓</div><div><div class="who">Prompts 4–5</div><div class="q">make it more open ,, the excel upload</div><div class="q" style="margin-top:1mm">even more, i meant the pnl and other columns requirement sounds big, or have an example created for me real quick so i can test</div>
+        <div class="r">Excel import, plus <b>TradeLens-example.xlsx</b>: 60 synthetic trades with three planted patterns. It became the first test file for Round 2.</div></div></div>
+    </div>
+
+    <div class="phase">Round 2 · Claude (Claude Code)</div>
+    <div class="trail">
+      <div class="ev"><div class="dot w">✓</div><div><div class="who">Prompt 6 · audit</div><div class="q">I have this project: [Round 1 app URL]
+Can you access this project and then do an analysis. This project should be suitable for this: "[project folder]". It should match all the constraints and requirements in teh Nubra Product Intern Assignment PDF. Also, it should behave appropriately to the Example data in the directory. Also check that the project has all the requirements mentioned in the JD.</div>
+        <div class="r">The audit found that Round 1 <b>ranked the wrong habit first</b>: fees ₹2,100 above BANKNIFTY ₹9,100. It <b>flagged re-entries that made money</b> (+₹650), answered "worst hour" with the <b>best</b> one, <b>couldn't read order history</b>, and had no one-pager or evals.</div></div></div>
+      <div class="ev"><div class="dot f">✕</div><div><div class="who">Prompts 7–8 · recover the code</div><div class="q">can you access the source code of this website</div><div class="q" style="margin-top:1mm">i am on the source tab, check in this screenshot: [Vercel → Source tab]</div>
+        <div class="r">Dead end: no source maps, and Vercel held only the built files. Nothing to fix in place.</div></div></div>
+    </div>
+    <p class="note" style="margin-top:0">Continued overleaf. Prompts about account setup and file formatting are left out.</p>
+  </main>
+  <footer><span>TradeLens · Bhavya Mohnot</span><span>02 · Prompts (1/2)</span></footer>
+</div>
+
+<!-- ============ 02 PROMPTS (2/2) ============ -->
+<div class="page">
+  <div class="band">
+    <div class="eyebrow">Artifact 02 · Prompts</div>
+    <h1>The prompt trail, continued</h1>
+    <p>Round 2 rebuilt the app from scratch. Claude wrote the analysis engine itself and briefed two sub-agents in parallel; their briefs are excerpted below.</p>
+  </div>
+  <main>
+    <div class="trail">
+      <div class="ev"><div class="dot w">✓</div><div><div class="who">Prompt 9 · rebuild</div><div class="q">Okay, so scratch that, just do this: Create for me everything this project needs from scratch, all the artifacts (submissions), meeting all the requirements with fresh source code. Keep the source code local for now, we will be directly uploading it to vercel.</div>
+        <div class="r">Claude reframed the product around one outcome: <b>at most three habits, ranked by marginal ₹, each proven with trades and turned into one rule</b>. It then wrote the engine: it reads broker tradebooks, rebuilds round trips, estimates NSE charges, and runs nine habit checks. On the brief's example file it named <b>BANKNIFTY (₹9,100)</b> and cleared the profitable re-entries.</div></div></div>
+      <div class="ev"><div class="dot w">✓</div><div><div class="who">Prompt 10 · data</div><div class="q">can you also generate a better/improved example dataset for this project, which meets all the JD and PDF requirements.</div>
+        <div class="r">A realistic <b>September 2026 Zerodha-style tradebook</b>: 388 buy/sell fills across NIFTY weeklies, BANKNIFTY, RELIANCE futures and equity. It has three planted habits, decoys that must not be flagged, and an answer key computed independently of the app.</div></div></div>
+      <div class="ev"><div class="dot w">✓</div><div><div class="who">Sub-agent brief · interface (excerpt)</div><div class="q">…single narrative column (max-width ~760px). It must NOT feel like a dashboard. Order matters: …
+…never use the word "revenge", never say "you were emotional"…
+…must work at 375px wide…</div>
+        <div class="r">Built and type-checked; works at desktop and phone width.</div></div></div>
+      <div class="ev"><div class="dot x">↻</div><div><div class="who">Sub-agent brief · evals (excerpt)</div><div class="q">…Planting functions, one per habit key above, each with a `strength` parameter…
+…recall@3 ≥ 90% and top-1 ≥ 80% for every habit type; clean-control FP rate ≤ 10%…
+…Do not loosen thresholds or assertions to make things pass.</div>
+        <div class="r"><b>First run failed the ship bar.</b> Expiry-day losses were hidden under "NIFTY keeps losing" for 25% of traders, and one test expected the wrong number (a 20-trade losing streak; it is 21). False alarms on clean traders sat right at the 10% limit.</div>
+        <div class="fix"><b>Fixed:</b> prefer the narrower habit when it explains most of the cost (75% → 100%), and use a stricter bar for checks that test many variants (false alarms 10% → 0%). The test was corrected, with the reason recorded.</div></div></div>
+      <div class="ev"><div class="dot x">↻</div><div><div class="who">Claude's own follow-up checks (no prompt)</div>
+        <div class="r">Two checks Claude added itself. It reran the evals on seeds never used for tuning, and it compared each habit's ₹ cost with its own evidence. <b>Both failed:</b> the "charges eating small trades" check dropped to 75–80% on unseen data, and "holding losers" claimed far more ₹ than its averages supported.</div>
+        <div class="fix"><b>Fixed:</b> the planted charges sat exactly on the 5% materiality line, so they were rescaled. Holding losers is now measured only after higher habits claim their trades. Final result on unseen data: <b>95% recall, 3% false alarms</b>.</div></div></div>
+      <div class="ev"><div class="dot x">↻</div><div><div class="who">Prompt 11</div><div class="q">show me the app</div>
+        <div class="r"><b>The main sample button failed:</b> "We could not load the sample file", and one data note appeared twice.</div>
+        <div class="fix"><b>Fixed:</b> the dev server hadn't picked up the new sample (the production build had it), and the duplicate note was removed.</div></div></div>
+      <div class="ev"><div class="dot w">✓</div><div><div class="who">Prompt 12 · ship (excerpt)</div><div class="q">push the updates to github yourself … Once you've done that, confirm if everything is reflected on the hosted vercel url</div>
+        <div class="r"><b>Shipped.</b> It is live at trade-lens-omega.vercel.app. Both samples were checked on the live site at desktop and phone width. The September sample shows <b>three habits costing ₹57,978</b>, and on the brief's file <b>BANKNIFTY ₹9,100</b>. 91 unit tests and 22 fixed eval cases pass.</div></div></div>
+    </div>
+  </main>
+  <footer><span>TradeLens · Bhavya Mohnot</span><span>02 · Prompts (2/2)</span></footer>
+</div>
+
