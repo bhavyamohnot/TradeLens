@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.vercel/
+*.log
+
+# Nubra's take-home brief and JD stay private
+/Nubra Product Intern Assignment*.pdf
+/Job Description.pdf
+# duplicate of app/public/samples/tradelens-example.xlsx
+/TradeLens-example.xlsx

@@ -1,0 +1,365 @@
+{
+  "note": "Synthetic data. Computed from the generated fills only (gross P&L = sum of sell value minus sum of buy value, per flat-to-flat round trip); no engine code was used.",
+  "totals": {
+    "roundTrips": 158,
+    "fills": 388,
+    "grossPnl": -19909.75
+  },
+  "openPosition": {
+    "symbol": "HDFCBANK",
+    "qty": 200
+  },
+  "planted": [
+    {
+      "key": "expiry-day",
+      "expectedRank": 1,
+      "description": "Buying the NIFTY weekly option on its own expiry day, every Tuesday.",
+      "trades": [
+        {
+          "symbol": "NIFTY2690125300CE",
+          "entryTime": "2026-09-01T09:51:13"
+        },
+        {
+          "symbol": "NIFTY2690125250CE",
+          "entryTime": "2026-09-01T11:11:50"
+        },
+        {
+          "symbol": "NIFTY2690125200CE",
+          "entryTime": "2026-09-01T12:15:41"
+        },
+        {
+          "symbol": "NIFTY2690124950PE",
+          "entryTime": "2026-09-01T13:44:53"
+        },
+        {
+          "symbol": "NIFTY2690125250CE",
+          "entryTime": "2026-09-01T14:57:18"
+        },
+        {
+          "symbol": "NIFTY2690824700PE",
+          "entryTime": "2026-09-08T09:58:40"
+        },
+        {
+          "symbol": "NIFTY2690824750PE",
+          "entryTime": "2026-09-08T11:27:53"
+        },
+        {
+          "symbol": "NIFTY2690825000CE",
+          "entryTime": "2026-09-08T12:44:34"
+        },
+        {
+          "symbol": "NIFTY2690825050CE",
+          "entryTime": "2026-09-08T14:33:56"
+        },
+        {
+          "symbol": "NIFTY2690825000CE",
+          "entryTime": "2026-09-08T15:14:13"
+        },
+        {
+          "symbol": "NIFTY2691524800PE",
+          "entryTime": "2026-09-15T10:57:58"
+        },
+        {
+          "symbol": "NIFTY2691525200CE",
+          "entryTime": "2026-09-15T11:43:01"
+        },
+        {
+          "symbol": "NIFTY2691524900PE",
+          "entryTime": "2026-09-15T12:42:45"
+        },
+        {
+          "symbol": "NIFTY2691525100CE",
+          "entryTime": "2026-09-15T13:48:36"
+        },
+        {
+          "symbol": "NIFTY2691525150CE",
+          "entryTime": "2026-09-15T15:08:07"
+        },
+        {
+          "symbol": "NIFTY2692225100CE",
+          "entryTime": "2026-09-22T09:48:25"
+        },
+        {
+          "symbol": "NIFTY2692224800PE",
+          "entryTime": "2026-09-22T12:02:58"
+        },
+        {
+          "symbol": "NIFTY2692224850PE",
+          "entryTime": "2026-09-22T12:54:24"
+        },
+        {
+          "symbol": "NIFTY2692224800PE",
+          "entryTime": "2026-09-22T13:47:13"
+        },
+        {
+          "symbol": "NIFTY2692224850PE",
+          "entryTime": "2026-09-22T14:58:33"
+        },
+        {
+          "symbol": "NIFTY26SEP24800PE",
+          "entryTime": "2026-09-29T09:46:09"
+        },
+        {
+          "symbol": "NIFTY26SEP24650PE",
+          "entryTime": "2026-09-29T11:56:17"
+        },
+        {
+          "symbol": "NIFTY26SEP25050CE",
+          "entryTime": "2026-09-29T13:18:59"
+        },
+        {
+          "symbol": "NIFTY26SEP24950CE",
+          "entryTime": "2026-09-29T14:02:24"
+        },
+        {
+          "symbol": "NIFTY26SEP24800PE",
+          "entryTime": "2026-09-29T14:54:42"
+        }
+      ],
+      "grossPnl": -27995.5
+    },
+    {
+      "key": "quick-reentry",
+      "expectedRank": 2,
+      "description": "Re-entering the same instrument, same size, 2-10 minutes after a losing trade.",
+      "trades": [
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-02T12:34:07"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-03T13:41:52"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-07T14:33:16"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP55000CE",
+          "entryTime": "2026-09-10T14:41:15"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP55600CE",
+          "entryTime": "2026-09-16T11:38:35"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP54800CE",
+          "entryTime": "2026-09-17T15:07:37"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-18T11:33:49"
+        },
+        {
+          "symbol": "RELIANCE26SEPFUT",
+          "entryTime": "2026-09-21T13:35:56"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP55400CE",
+          "entryTime": "2026-09-24T14:50:01"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP55500PE",
+          "entryTime": "2026-09-25T12:36:27"
+        },
+        {
+          "symbol": "RELIANCE26SEPFUT",
+          "entryTime": "2026-09-28T13:50:09"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-30T14:43:31"
+        }
+      ],
+      "grossPnl": -14010.5
+    },
+    {
+      "key": "holding-losers",
+      "expectedRank": 3,
+      "description": "Losers held 45-105 minutes (winners 6-20) and about 2.6x bigger than the quick losers. Includes the one-off BANKNIFTY loss, which is also a long-held loser.",
+      "trades": [
+        {
+          "symbol": "RELIANCE26SEPFUT",
+          "entryTime": "2026-09-01T12:11:09"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-02T10:47:48"
+        },
+        {
+          "symbol": "NIFTY2690825150CE",
+          "entryTime": "2026-09-02T14:08:02"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-03T12:03:00"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-03T13:09:35"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP54100PE",
+          "entryTime": "2026-09-04T10:08:05"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP54400CE",
+          "entryTime": "2026-09-04T12:15:46"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-07T12:01:28"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-07T13:33:57"
+        },
+        {
+          "symbol": "RELIANCE26SEPFUT",
+          "entryTime": "2026-09-08T12:19:27"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-09T10:05:29"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP54100PE",
+          "entryTime": "2026-09-09T13:31:36"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP54300PE",
+          "entryTime": "2026-09-10T10:47:42"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP54400PE",
+          "entryTime": "2026-09-10T13:13:28"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-11T12:26:06"
+        },
+        {
+          "symbol": "NIFTY2691525100PE",
+          "entryTime": "2026-09-11T12:47:43"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-15T10:28:44"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP55600CE",
+          "entryTime": "2026-09-16T09:57:16"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-16T13:57:40"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-17T13:30:04"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP54900CE",
+          "entryTime": "2026-09-17T14:04:19"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-18T09:59:24"
+        },
+        {
+          "symbol": "NIFTY2692225500CE",
+          "entryTime": "2026-09-18T12:29:28"
+        },
+        {
+          "symbol": "NIFTY2692225000CE",
+          "entryTime": "2026-09-21T10:19:52"
+        },
+        {
+          "symbol": "RELIANCE26SEPFUT",
+          "entryTime": "2026-09-21T12:27:41"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-22T09:48:31"
+        },
+        {
+          "symbol": "NIFTY26SEP25300CE",
+          "entryTime": "2026-09-23T10:39:24"
+        },
+        {
+          "symbol": "NIFTY26SEP24900PE",
+          "entryTime": "2026-09-23T12:44:52"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-24T13:35:24"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP55300PE",
+          "entryTime": "2026-09-24T13:53:21"
+        },
+        {
+          "symbol": "BANKNIFTY26SEP55400PE",
+          "entryTime": "2026-09-25T10:53:31"
+        },
+        {
+          "symbol": "HDFCBANK",
+          "entryTime": "2026-09-25T13:09:10"
+        },
+        {
+          "symbol": "RELIANCE26SEPFUT",
+          "entryTime": "2026-09-28T11:59:54"
+        },
+        {
+          "symbol": "NIFTY26SEP25200CE",
+          "entryTime": "2026-09-28T14:10:21"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-29T13:15:18"
+        },
+        {
+          "symbol": "NIFTY26O0624900CE",
+          "entryTime": "2026-09-30T09:46:07"
+        },
+        {
+          "symbol": "INFY",
+          "entryTime": "2026-09-30T13:38:44"
+        }
+      ],
+      "grossPnl": -61522,
+      "excessLossEstimate": 9104.78
+    }
+  ],
+  "decoys": [
+    {
+      "key": "time-window:opening",
+      "note": "The opening half hour is the busiest window and clearly profitable."
+    },
+    {
+      "key": "instrument-bleed:RELIANCE",
+      "note": "RELIANCE futures have the most turnover and are net profitable."
+    },
+    {
+      "key": "instrument-bleed:BANKNIFTY",
+      "note": "One large BANKNIFTY loss (about -6,000) is a one-off; BANKNIFTY overall is not a repeated leak."
+    },
+    {
+      "key": "size-after-loss",
+      "note": "Quantity is constant per underlying, so there is no sizing up after losses."
+    },
+    {
+      "key": "overtrading",
+      "note": "No day has more trades than the typical day (max 8, median 8)."
+    },
+    {
+      "key": "loss-streak",
+      "note": "No day has three losing trades in a row."
+    },
+    {
+      "key": "fee-churn",
+      "note": "Every trade moves at least 3.5x its estimated charges."
+    }
+  ]
+}

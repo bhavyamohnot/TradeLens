@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TradeLens — one-pager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --navy: #0A1630; --ink: #0B1220; --ink2: #334155; --muted: #64748B; --line: #E2E8F0;
+    --accent: #1D6FE8; --accent-soft: #E8F0FD; --loss: #C0262D; --gain: #0F8A4B;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; }
+  body { font-family: Inter, system-ui, sans-serif; color: var(--ink2); font-size: 8.4pt; line-height: 1.38; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; overflow: hidden; display: flex; flex-direction: column; }
+  header { background: radial-gradient(ellipse 60% 120% at 78% 0%, rgba(29,111,232,.45), transparent 70%), radial-gradient(ellipse 40% 90% at 100% 100%, rgba(15,138,75,.25), transparent 70%), var(--navy); color: #fff; padding: 8mm 14mm 6mm; }
+  .eyebrow { font-size: 7pt; letter-spacing: .14em; text-transform: uppercase; color: #8FB6F7; font-weight: 600; }
+  h1 { font-size: 18.5pt; line-height: 1.15; margin: 2.2mm 0 2mm; color: #fff; font-weight: 700; letter-spacing: -.01em; }
+  .byline { font-size: 8pt; color: #B8C4D9; }
+  .byline b { color: #fff; font-weight: 600; }
+  main { padding: 5mm 14mm 0; flex: 1; }
+  h2 { font-size: 9.6pt; color: var(--ink); margin: 3.2mm 0 1.2mm; font-weight: 700; display: flex; align-items: center; gap: 2mm; }
+  h2::before { content: ""; width: 3mm; height: 1.2pt; background: var(--accent); display: inline-block; }
+  h2:first-child { margin-top: 0; }
+  p { margin: 0 0 1.6mm; }
+  strong { color: var(--ink); font-weight: 600; }
+  ul, ol { margin: 0 0 1.4mm; padding-left: 4.2mm; }
+  li { margin: 0 0 .7mm; }
+  .stat { display: flex; gap: 3mm; margin: 1.8mm 0 2mm; }
+  .stat div { flex: 1; border: 1px solid var(--line); border-radius: 2mm; padding: 1.8mm 2.6mm; }
+  .stat b { display: block; font-size: 12.5pt; color: var(--loss); font-weight: 700; line-height: 1.1; }
+  .stat span { font-size: 7.2pt; color: var(--muted); }
+  .job { background: var(--accent-soft); border-left: 2.5pt solid var(--accent); padding: 2mm 3mm; border-radius: 0 2mm 2mm 0; color: var(--ink); margin: 1.6mm 0 0; }
+  table { width: 100%; border-collapse: collapse; margin: 0.6mm 0 1.6mm; font-size: 8.1pt; }
+  th, td { text-align: left; padding: 1.15mm 2mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 7pt; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  tr.pick td { background: var(--accent-soft); color: var(--ink); }
+  tr.pick td:first-child { font-weight: 600; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 7mm; }
+  .mini { columns: 2; column-gap: 5mm; margin-top: .6mm; }
+  .mini li { break-inside: avoid; }
+  footer { padding: 2.6mm 14mm 6mm; font-size: 6.8pt; color: var(--muted); display: flex; justify-content: space-between; border-top: 1px solid var(--line); margin: 0 14mm; padding-left: 0; padding-right: 0; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="eyebrow">Nubra · Product Management Intern case · Problem 03, post-trade review</div>
+    <h1>TradeLens: the monthly review that names the habits costing you money</h1>
+    <div class="byline"><b>Bhavya Mohnot</b> · October 2026</div>
+  </header>
+
+  <main>
+    <h2>My take on the problem</h2>
+    <p>Traders don't skip reviews out of laziness; reviewing is hard. A tradebook is hundreds of buy/sell rows, and a P&amp;L report says <em>how much</em> you lost, not <em>what to change</em>. The losses that matter are repeated behaviours: the instrument that never works for you, the expiry-day option punt, the trade taken ten minutes after a loss. Each is invisible one trade at a time and obvious across a month.</p>
+    <div class="stat">
+      <div><b>87.7%</b><span>of individual F&amp;O traders lost money in FY26</span></div>
+      <div><b>₹91,685 cr</b><span>lost by individual traders in total</span></div>
+      <div><b>~90%</b><span>of those who lost two years running, and kept trading, lost again</span></div>
+    </div>
+    <p>People keep trading; they don't keep learning.</p>
+    <p class="job">So the job is not "more analytics". It is to take a month of raw order history, name the <strong>two or three habits that cost the most rupees</strong>, prove each with the actual trades, and hand back <strong>one rule to try next month</strong>.</p>
+
+    <h2>Why Nubra should solve it</h2>
+    <ul>
+      <li><strong>It already has the data.</strong> Nothing to export or upload; the review can arrive on the 1st of every month.</li>
+      <li><strong>The right users.</strong> Nubra is built for active traders, scalpers and options strategists, which is where habits compound fastest.</li>
+      <li><strong>It can close the loop.</strong> A journal app can only tell you about a habit. Nubra can turn it into a guardrail at the moment of decision: an expiry-day nudge on the order ticket, a cool-off after three losses, or pausing an instrument on a smart watchlist.</li>
+      <li><strong>Retention.</strong> Traders who blow up their accounts churn. Helping them lose less is good for them and for lifetime value.</li>
+    </ul>
+
+    <h2>The solution space</h2>
+    <table>
+      <tr><th style="width:36%">Option</th><th>Why not (or why)</th></tr>
+      <tr><td>P&amp;L dashboard (Console-style)</td><td>Answers "how much", not "what to change"; most traders never open it</td></tr>
+      <tr><td>Trade journal (TradeZella, Tradervue)</td><td>Needs manual tagging; too much effort for most retail traders</td></tr>
+      <tr><td>AI chat over your trades</td><td>Flexible but hard to verify; a confident wrong rupee figure does real damage</td></tr>
+      <tr class="pick"><td>Opinionated monthly review (chosen)</td><td>Deterministic checks, ranked by ₹, at most three, each with evidence and a rule</td></tr>
+    </table>
+    <ol>
+      <li><strong>Rank by marginal ₹.</strong> If BANKNIFTY losses and closing-hour losses are the same trades, they count once, and the closing hour is cleared.</li>
+      <li><strong>Don't invent problems.</strong> A habit must cover at least 5% of the month's losses and be statistically worse than the trader's other trades. Everything checked and cleared is shown, for example "your quick re-entries made +₹650".</li>
+      <li><strong>Plain words, no motive-guessing.</strong> It says "jumping back in within 15 minutes of a loss", never "revenge trading".</li>
+    </ol>
+
+    <div class="cols">
+      <div>
+        <h2>In scope (v1)</h2>
+        <ul>
+          <li>One month of NSE equity/F&amp;O order history: a broker tradebook CSV/XLSX, or a closed-trade sheet.</li>
+          <li>Round-trip rebuild from fills (scale-ins, partial exits, shorts), with charges estimated when the file has none.</li>
+          <li>Nine habit checks: an instrument that keeps losing · trading on after three losses · quick re-entry after a loss · overtrading · a losing time of day · expiry-day options · holding losers longer than winners · sizing up after a loss · charges eating small trades.</li>
+          <li>A one-rule commitment, checked against next month's review.</li>
+          <li>Runs entirely in the browser; the file never leaves the device.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Out of scope</h2>
+        <ul>
+          <li>Live positions and margin (problem 02).</li>
+          <li>Broker API sync.</li>
+          <li>Grouping multi-leg strategies (each leg is reviewed on its own).</li>
+          <li>Intraday price paths, so no "you exited too early" claims.</li>
+          <li>Tax P&amp;L, guessing emotions, free-form AI chat.</li>
+        </ul>
+        <h2>How I'd know it works</h2>
+        <ul>
+          <li><strong>Adoption:</strong> the share of monthly active traders who open the review, and the share who commit to a rule.</li>
+          <li><strong>Outcome (north star):</strong> the ₹ cost of the committed habit the following month against its baseline. Target: at least a 20% drop for half of committers.</li>
+          <li><strong>Trust:</strong> the "this is wrong" rate per habit card; a high rate means re-tuning or removing that check.</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span>Figures: SEBI study of individual traders in equity derivatives, FY26 (Aug 2026).</span>
+    <span>Companion artifacts: prompts · evals · working app</span>
+  </footer>
+</div>
+</body>
+</html>
